@@ -1,5 +1,7 @@
+import java.util.NoSuchElementException;
+import java.util.Iterator;
 
- public class Deque<Item> implements Iterable<Item> {
+public class Deque<Item> implements Iterable<Item> {
 
 	/**
 	public class Deque<Item> implements Iterable<Item> {
@@ -18,9 +20,8 @@
      /*
       * Keep track of the first and last nodes in the deque.
       */
-     Node first       = null;
-     Node last        = null;
-     Node penultimate = null;
+     Node first  = null;
+     Node last   = null;
      
      /**
       * Let's also keep track of the size.
@@ -28,17 +29,20 @@
      int size = 0;
      
     /**
-     * Every Node points to its next element. 
+     * Doubly-linked list
      * @author fdslkjds
      *
      */
     private class Node {
-        Node next ;
-        Item item ;
+        Node next;
+        Node previous;
+        Item item;
         
         public Node(Item item){
             this.item = item;
-            this.next = null;
+            
+            this.next     = null;
+            this.previous = null;
         }
     }
 
@@ -53,18 +57,110 @@
     public void addFirst(Item item){
         Node newNode = new Node(item);
         
-        if (this.isEmpty()) {
-            // Case 1: there is no first item.
-            first = newNode;
-            last  = newNode;
-        } else {
-            // Case 2: there IS a first item.
-            first.next = newNode;
+        switch(this.size) {
+            case 0:
+                first = newNode;
+                last  = newNode;
+            default:
+                newNode.previous = first;
+                first.next       = newNode;
+
+                first = newNode;
         }
 
         this.size = this.size + 1;
 
         return;
+    }
+    
+    public void addLast(Item item) {
+        Node newNode = new Node(item);
+        
+        switch(this.size) {
+            case 0:
+                first = newNode;
+                last  = newNode;
+            default:
+                newNode.next  = last;
+                last.previous = newNode;
+
+                last = newNode;
+        }
+
+        this.size = this.size + 1;
+
+        return;
+    }
+    
+    public Item removeFirst() 
+            throws NoSuchElementException{
+
+        if (this.isEmpty()) {
+            throw new java.util.NoSuchElementException();
+        }
+
+        Item itemToReturn = this.first.item;
+        
+        switch(this.size) {
+        case 1:
+            /* One element:
+             *   BEFORE: A (first, last) -> null
+             *   AFTER:  first = last = null
+             */
+            this.first = null;
+            this.last = null;
+            break;       
+        default:
+            /* Two or more elements:
+             *   BEFORE: ... -> B -> A (first) -> null
+             *   AFTER:  ... -> B (first) -> null
+             */
+            Node B = this.first.previous;
+            B.next = null;
+            this.first  = B;
+            break;
+            
+        }
+        this.size = this.size - 1;
+        
+        return itemToReturn;
+    }
+
+    public Item removeLast() 
+            throws NoSuchElementException{
+
+        if (this.isEmpty()) {
+            throw new java.util.NoSuchElementException();
+        }
+
+        Item itemToReturn = this.last.item;
+        
+        switch(this.size) {
+        case 1:
+            /* One element:
+             *   BEFORE: A (first, last) -> null
+             *   AFTER:  first = last = null
+             */
+            this.first = null;
+            this.last = null;
+            break;       
+        default:
+            /* Two elements:
+             *   BEFORE: B (last) -> A -> ...
+             *   AFTER:  A (last) -> ...
+             */
+            Node B = this.last;
+            Node A = B.next;
+
+            last = A;
+
+            A.previous = null;
+            break;
+            
+        }
+        this.size = this.size - 1;
+        
+        return itemToReturn;
     }
     
     public Deque() {
@@ -75,15 +171,18 @@
         return new DequeIterator();
     }
 
-    private class DequeIterator implements Iterator<Item>{
-        public boolean has_Next() { return true; }
+    private class DequeIterator implements Iterator<Item> {
+        private Node current = first;
+        
+        public boolean hasNext() { 
+            return (current != null);
+        }
         public void remove() { /* not implemented */ }
         public Item next() {
-            
-            return first.item;
+            Item itemToReturn = current.item;
+            current = current.previous;
+            return itemToReturn;
         }
-	    
-	    
 		
 	}
 	
