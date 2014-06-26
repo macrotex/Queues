@@ -183,7 +183,6 @@ public class Deque<Item> implements Iterable<Item> {
             current = current.previous;
             return itemToReturn;
         }
-		
 	}
 	
 	    
