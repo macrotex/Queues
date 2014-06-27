@@ -127,7 +127,7 @@ public class Deque<Item> implements Iterable<Item> {
     }
 
     public Item removeLast() 
-            throws NoSuchElementException{
+            throws NoSuchElementException {
 
         if (this.isEmpty()) {
             throw new java.util.NoSuchElementException();
@@ -152,7 +152,7 @@ public class Deque<Item> implements Iterable<Item> {
             Node B = this.last;
             Node A = B.next;
 
-            last = A;
+            this.last = A;
 
             A.previous = null;
             break;
