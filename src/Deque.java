@@ -59,13 +59,13 @@ public class Deque<Item> implements Iterable<Item> {
         
         switch(this.size) {
             case 0:
-                first = newNode;
-                last  = newNode;
+                this.first = newNode;
+                this.last  = newNode;
             default:
-                newNode.previous = first;
-                first.next       = newNode;
+                newNode.previous = this.first;
+                this.first.next  = newNode;
 
-                first = newNode;
+                this.first = newNode;
         }
 
         this.size = this.size + 1;

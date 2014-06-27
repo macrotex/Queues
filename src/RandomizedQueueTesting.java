@@ -77,7 +77,7 @@ public class RandomizedQueueTesting {
 
         // Iterate over a single element RQ
         rq.enqueue(13);
-        for (int curItem : rq){
+        for (int curItem : rq) {
             counter = counter + 1;
             assertTrue(curItem == 13);
         }

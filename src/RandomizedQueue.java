@@ -7,18 +7,27 @@ import java.util.Iterator;
  * that element. We then take the LAST element of the array and put it where the 
  * just-returned element was stored and then decrement the size of the array, then resize
  * (if necessary). 
- * @author adamhl
+ * @author Fred Habster
  *
  * @param <Item>
  */
 public class RandomizedQueue<Item> implements Iterable<Item> {
+    /**
+     * This is the (resizable) array where we store the items.
+     */
     private Item[] items;
     
-    // endOfArray is the location in the array closest to the 
-    // start that is NOT being used. So, if the array has no
-    // usable elements, endOfArray is 0.
+    /**
+     *  endOfArray is the location in the array closest to the
+     *  start that is NOT being used. So, if the array has no
+     *  usable elements, endOfArray is 0. 
+     */
     private int endOfArrayIndex;
     
+    /**
+     * The constructor. Initializes our resizable array to a single 
+     * element.
+     */
     @SuppressWarnings("unchecked")
     public RandomizedQueue() {
         // Initialize the array to a single element.
@@ -53,7 +62,7 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
      * Resize the array.
      */
     private void resize(int capacity) {
-        System.out.println(String.format("Resizing to capacity %d", capacity));
+        //System.out.println(String.format("Resizing to capacity %d", capacity));
         Item[] copy = (Item[]) new Object[capacity];
         
         for (int i = 0; i < this.endOfArrayIndex; i++) {
@@ -84,12 +93,12 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         this.items[randomArrayIndex] = lastItem;
 
         // Decrement endOfArrayIndex
-        --endOfArrayIndex;
+        --this.endOfArrayIndex;
 
         // Resize (shrink) the array if the last elements is less than or equal
         // to 1/4 the array length.
-        if ((!this.isEmpty()) && (this.endOfArrayIndex <= this.items.length/4)) {
-            resize(this.items.length/2);
+        if ((!this.isEmpty()) && (this.endOfArrayIndex <= this.items.length / 4)) {
+            this.resize(this.items.length / 2);
         }
         return itemToReturn;
     }
@@ -97,7 +106,7 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
     // Return a random array element
     public int chooseRandomArrayIndex() {
         // Pick a random integer in [0, endOfArrayIndex)
-        int randomArrayIndex = StdRandom.uniform(endOfArrayIndex);
+        int randomArrayIndex = StdRandom.uniform(this.endOfArrayIndex);
         return randomArrayIndex;
     }
 
