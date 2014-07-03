@@ -1,4 +1,5 @@
 import java.util.NoSuchElementException;
+import java.lang.NullPointerException;
 import java.util.Iterator;
 
 /**
@@ -37,48 +38,68 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         
     }
     
+    /**
+     * The length of the queue.
+     * @return the length of the queue (zero if queue is empty).
+     */
     public int size() {
         return this.endOfArrayIndex;
     }
 
+    /**
+     * Indicates whether the queue is empty or not.
+     * @return true if the queue is empty, false otherwise.
+     */
     public boolean isEmpty() {
         return (this.endOfArrayIndex == 0);
     }
-    
-    /*
-     * Enqueing is the same as a non-randomized enqueue.
+
+
+    /**
+     * Add an item to the queue. Note that enqueue for a randomized
+     * queue works the same as for a non-randomized queue.
+     * @param item the item to enqueue.
+     * @throws NullPointerException if null is the item to be enqueued.
      */
-    public void enqueue(Item item)  {
-        //System.out.println(String.format("endOfArrayIndex is %d", this.endOfArrayIndex));
-        //System.out.println(String.format("length of items is %d", this.items.length));
-        if (this.endOfArrayIndex == this.items.length) this.resize(2 * this.items.length);
-        //System.out.println(String.format("endOfArrayIndex is %d", this.endOfArrayIndex));
+    public void enqueue(Item item) 
+        throws NullPointerException {
+        if (item == null) {
+            throw new NullPointerException();
+        }
+        if (this.endOfArrayIndex == this.items.length) {
+            this.resize(2 * this.items.length);
+        }
+
         this.items[this.endOfArrayIndex] = item;
         this.endOfArrayIndex = this.endOfArrayIndex + 1;
     }
-    
-    @SuppressWarnings("unchecked")
-    /*
+
+    /**
      * Resize the array.
+     * @param capacity resize the array to capacity.
      */
+    @SuppressWarnings("unchecked")
     private void resize(int capacity) {
-        //System.out.println(String.format("Resizing to capacity %d", capacity));
         Item[] copy = (Item[]) new Object[capacity];
-        
+
         for (int i = 0; i < this.endOfArrayIndex; i++) {
             copy[i] = this.items[i];
         }
-        
+
         this.items = copy;
     }
 
-    /*
-     * Return a random item.
+
+    /**
+     * Dequeue a random element.
+     * @return the element dequeued.
+     * @throws NoSuchElementException if the queue is empty.
      */
     public Item dequeue() throws NoSuchElementException {
         if (this.isEmpty()) {
-            throw new  java.util.NoSuchElementException();
+            throw new java.util.NoSuchElementException();
         }
+
         // Find a random integer in [0, this.endOfArrayIndex)
         int randomArrayIndex = this.chooseRandomArrayIndex();
 
@@ -91,7 +112,8 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         // Swap the LAST array element with this one.
         Item lastItem = this.items[this.endOfArrayIndex - 1];
         this.items[randomArrayIndex] = lastItem;
-
+        this.items[this.endOfArrayIndex - 1] = null;
+        
         // Decrement endOfArrayIndex
         --this.endOfArrayIndex;
 
@@ -102,56 +124,110 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         }
         return itemToReturn;
     }
-    
-    // Return a random array element
-    public int chooseRandomArrayIndex() {
+
+
+    /**
+     * Find the index of a random element of the array.
+     * @return the index of the random array location.
+     */
+    private int chooseRandomArrayIndex() {
         // Pick a random integer in [0, endOfArrayIndex)
         int randomArrayIndex = StdRandom.uniform(this.endOfArrayIndex);
         return randomArrayIndex;
     }
 
-    /*
+
+    /**
+     * 
      * Return a random element from the array.
+     * @return a random element from the array (but array remains the same)
+     * @throws NoSuchElementException if the queue is empty.
      */
-    public Item sample() {
+    public Item sample() throws NoSuchElementException {
+        if (this.isEmpty()) {
+            throw new java.util.NoSuchElementException();
+        }
+
         int randomArrayIndex = this.chooseRandomArrayIndex();
         Item itemToReturn = this.items[randomArrayIndex];
         return itemToReturn;
     }
     
-    private RandomizedQueue<Item> copy(){
+    /**
+     * Make a copy of this RandomizedQueue object.
+     * @return the copy.
+     */
+    private RandomizedQueue<Item> copy() {
         RandomizedQueue<Item> rqCopy = new RandomizedQueue<Item>();
         
-        for (int i=0; i < this.endOfArrayIndex; ++i) {
+        for (int i = 0; i < this.endOfArrayIndex; ++i) {
             rqCopy.enqueue(this.items[i]);
         }
         
         return rqCopy;
     }
    
+    /**
+     * The iterator for RandomizedQueue.
+     * @return the iterator object.
+     */
     public Iterator<Item> iterator() {
         return new RandomizedQueueIterator();
     }
 
-    private class RandomizedQueueIterator implements Iterator<Item> {
+    /**
+     * The implementation of the RandomizedQueue iterator.
+     * @author Fred Habster
+     *
+     */
+    private final class RandomizedQueueIterator implements Iterator<Item> {
         
         private RandomizedQueue<Item> rq;
         
-        private RandomizedQueueIterator(){
+        /**
+         * Initialized the iterator by creating a copy.
+         */
+        private RandomizedQueueIterator() {
             // Upon initialization, copy the RandomizedQueue we want to iterate over.
-            rq = RandomizedQueue.this.copy();
+            this.rq = RandomizedQueue.this.copy();
         }
         
+        /**
+         * Indicates whether or not the iterator has a next item.
+         * @return true if the iterator has a next item, false otherwise.
+         */
         public boolean hasNext() { 
-            return !rq.isEmpty();
+            return !this.rq.isEmpty();
         }
-        public void remove() { /* not implemented */ }
-        public Item next() {
-            return rq.dequeue();
+        
+        /**
+         * We don't use this method.
+         * @throws UnsupportedOperationException in all cases
+         */
+        public void remove() 
+            throws UnsupportedOperationException {
+            throw new UnsupportedOperationException();
+        }
+        
+        /**
+         * Return the next item. All we have to do is dequeue from the copy.
+         * @return the next item
+         * @throws NoSuchElementException if there are more items to offer 
+         */
+        public Item next() 
+                throws NoSuchElementException {
+            if (!this.hasNext()) {
+                throw new java.util.NoSuchElementException();
+            } else {
+                return this.rq.dequeue();
+            }
         }
     }
     
-    
+    /**
+     * We don't use this method, but put it here as a place-holder.
+     * @param args the command-line arguments.
+     */
     public static void main(String[] args) {
         /* Later? */
     }

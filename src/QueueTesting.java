@@ -119,7 +119,16 @@ public class QueueTesting {
 
     }
     
+    @Test
+    public void QueueTestingAddFirst() {
+        // Create a Deque object.
+        Deque<Integer> deque = new Deque<Integer>();
+        assertTrue(deque instanceof Deque);
+
+        deque.addFirst(1);
         
+    }
+    
     // Test for exceptions.
     @Test(expected = java.util.NoSuchElementException.class)
     public void QueuesTestsException1() {
@@ -143,6 +152,13 @@ public class QueueTesting {
             assertTrue(item == counter);
         }
         assertTrue(counter == 5);
+
+        counter = 0; 
+        for (int item : deque){
+            counter = counter + 1;
+            assertTrue(item == counter);
+        }
+        assertTrue(counter == 5);
     }        
 
     @Test
@@ -157,4 +173,26 @@ public class QueueTesting {
         assertTrue(counter == 0);
     }        
 
+    /**
+     * Do only addFirst and then call iterator.
+     */
+    @Test
+    public void QueuesTestIteration3() {
+        Deque<Integer> deque = new Deque<Integer>();
+
+        int m = 3;
+        for (int i = 1; i <= m; ++i) {
+            deque.addFirst(5 * i);
+        }
+        
+        int counter = 0;
+        for (int item: deque) {
+            counter = counter + 1;
+            assertTrue(item == 5 * (m - counter + 1));
+        }
+        
+        assertTrue(counter == m);
+    }        
+
+    
 }

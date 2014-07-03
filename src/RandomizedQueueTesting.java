@@ -1,6 +1,7 @@
 import static org.junit.Assert.*;
 
 import org.junit.Test;
+import java.util.Iterator;
 
 
 public class RandomizedQueueTesting {
@@ -32,18 +33,14 @@ public class RandomizedQueueTesting {
         
         item = rq.dequeue();
         assertTrue(rq.size() == 2);
-        System.out.println(String.format("item is %d", item));
 
         item = rq.dequeue();
         assertTrue(rq.size() == 1);
-        System.out.println(String.format("item is %d", item));
-
+        
         item = rq.dequeue();
         assertTrue(rq.size() == 0);
-        System.out.println(String.format("item is %d", item));
 
         // Do more
-        System.out.println("Starting enqueue");
 
         int numIterations = 10000;
         for (int i=1; i <= numIterations; ++i) {
@@ -51,7 +48,6 @@ public class RandomizedQueueTesting {
             assertTrue(rq.size() == i);
         }
 
-        System.out.println("Starting dequeue");
         for (int i=1; i <= numIterations; ++i) {
             //System.out.println(String.format("size is %d", rq.size()));
             item = rq.dequeue();
@@ -116,5 +112,50 @@ public class RandomizedQueueTesting {
         int result = rq.dequeue() * rq.dequeue() * rq.dequeue() * rq.dequeue() ;
         assertTrue(result == (2 * 3 * 5 * 7));
     }
+
+    // Test for exception if attempt to add null
+    @Test(expected = java.lang.NullPointerException.class)
+    public void QueuesTestsExceptionAddNull() {
+        RandomizedQueue<Integer> rq = new RandomizedQueue<Integer>();
+        rq.enqueue(null);
+    }        
+
+    // Test for exception if attempt to sample from empty queue
+    @Test(expected = java.util.NoSuchElementException.class)
+    public void QueuesTestsExceptionSampleFromEmptyQueue() {
+        RandomizedQueue<Integer> rq = new RandomizedQueue<Integer>();
+        int s = rq.sample();
+    }        
+
+    // Test for exception if attempt to dequeue from empty queue
+    @Test(expected = java.util.NoSuchElementException.class)
+    public void QueuesTestsExceptionDequeueFromEmptyQueue() {
+        RandomizedQueue<Integer> rq = new RandomizedQueue<Integer>();
+        int s = rq.dequeue();
+    }        
+    
+    // Test for exception if attempt to use the remove method.
+    @Test(expected = java.lang.UnsupportedOperationException.class)
+    public void QueuesTestsExceptionAttemptToUseRemove() {
+        RandomizedQueue<Integer> rq = new RandomizedQueue<Integer>();
+        rq.iterator().remove();
+    }        
+
+    // Test for exception if attempt call next in iterator but no more items
+    @Test(expected = java.util.NoSuchElementException.class)
+    public void QueuesTestsExceptionAttemptToOveruseNext() {
+        RandomizedQueue<Integer> rq = new RandomizedQueue<Integer>();
+        rq.enqueue(2);
+        rq.enqueue(3);
+
+        Iterator<Integer> iter = rq.iterator();
+
+        int item = 0;
+        iter.next();
+        iter.next();
+        iter.next();
+    }        
+
+    
 
 }
